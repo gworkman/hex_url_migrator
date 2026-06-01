@@ -13,23 +13,25 @@ defmodule HexUrlMigrator do
       OptionParser.parse(args, switches: [dry_run: :boolean, exclude: :string, ext: :string])
 
     dry_run? = Keyword.get(parsed, :dry_run, false)
-    exclude_raw = Keyword.get(parsed, :exclude, "deps,_build")
+    exclude_raw = Keyword.get(parsed, :exclude, "**/deps,**/_build")
     ext_raw = Keyword.get(parsed, :ext, "ex,exs,md")
 
-    exclude_paths = String.split(exclude_raw, ",") |> Enum.map(&String.trim/1)
+    exclude_patterns = String.split(exclude_raw, ",") |> Enum.map(&String.trim/1)
     extensions = String.split(ext_raw, ",") |> Enum.map(&String.trim/1)
 
+    # confirm before starting search
+    validate_mix_project!()
+
     if dry_run? do
-      IO.puts("✨ Running in DRY-RUN mode. No files will be modified.\n")
+      IO.puts("✨ Running in dry run mode. No files will be modified.\n")
     else
       # Perform strict safety checks if we intend to write changes
       validate_git_env!()
-      validate_mix_project!()
     end
 
     IO.puts("Scanning for files...")
 
-    files = find_files(extensions, exclude_paths)
+    files = find_files(extensions, exclude_patterns)
 
     if files == [] do
       IO.puts("No matching files found.")
@@ -38,17 +40,28 @@ defmodule HexUrlMigrator do
     end
   end
 
-  defp find_files(extensions, exclude_paths) do
+  defp find_files(extensions, exclude_patterns) do
     glob =
       case extensions do
         [ext] -> "**/*.#{ext}"
         exts -> "**/*.{#{Enum.join(exts, ",")}}"
       end
 
+    excluded_files =
+      exclude_patterns
+      |> Enum.flat_map(fn pattern ->
+        # If the pattern is a directory, match all files inside it
+        if String.ends_with?(pattern, "/") do
+          Path.wildcard("#{pattern}**")
+        else
+          # Otherwise match files/dirs precisely
+          Path.wildcard("#{pattern}/**") ++ Path.wildcard(pattern)
+        end
+      end)
+      |> MapSet.new()
+
     Path.wildcard(glob)
-    |> Enum.reject(fn path ->
-      Enum.any?(exclude_paths, &String.starts_with?(path, &1))
-    end)
+    |> Enum.reject(&MapSet.member?(excluded_files, &1))
   end
 
   defp run_migration(files, dry_run?) do

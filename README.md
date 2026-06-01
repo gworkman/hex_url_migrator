@@ -42,8 +42,8 @@ mix escript.install git https://github.com/gworkman/hex_url_migrator
 - dry run: `hex_url_migrator --dry-run`
   - please run this before running the full migration.
 - scan and replace: `hex_url_migrator`
-- exclude paths: `hex_url_migrator --exclude "deps,other_dir"` (defaults to
-  `"deps,_build"`)
+- exclude patterns: `hex_url_migrator --exclude "**/deps,**/custom_dir"`
+  (defaults to `"**/deps,**/_build"`)
 - specific extensions: `hex_url_migrator --ext "ex,md,txt"` (defaults to
   `"ex,exs,md"`)
 
