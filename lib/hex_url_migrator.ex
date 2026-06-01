@@ -11,8 +11,20 @@ defmodule HexUrlMigrator do
     # Parse CLI flags
     {parsed, _args, _invalid} =
       OptionParser.parse(args,
-        switches: [dry_run: :boolean, exclude: :string, ext: :string, verify: :boolean]
+        switches: [
+          dry_run: :boolean,
+          exclude: :string,
+          ext: :string,
+          verify: :boolean,
+          help: :boolean
+        ],
+        aliases: [h: :help]
       )
+
+    if Keyword.get(parsed, :help, false) do
+      print_help()
+      System.halt(0)
+    end
 
     dry_run? = Keyword.get(parsed, :dry_run, false)
     verify? = Keyword.get(parsed, :verify, false)
@@ -41,6 +53,27 @@ defmodule HexUrlMigrator do
     else
       run_migration(files, dry_run?, verify?)
     end
+  end
+
+  defp print_help do
+    IO.puts("""
+    HexUrlMigrator - Safely migrate HexDocs URLs to the 2026 format.
+
+    Usage:
+      hex_url_migrator [options]
+
+    Options:
+      --dry-run          Show what would be changed without modifying files.
+      --verify           Check if migrated URLs return 200 OK (requires internet).
+      --exclude <pats>   Comma-separated glob patterns to exclude (default: **/deps,**/_build).
+      --ext <exts>       Comma-separated extensions to scan (default: ex,exs,md).
+      --help, -h         Show this help message.
+
+    Examples:
+      hex_url_migrator --dry-run
+      hex_url_migrator --verify
+      hex_url_migrator --exclude "**/custom_dir,**/tmp" --ext "ex,txt"
+    """)
   end
 
   defp find_files(extensions, exclude_patterns) do
