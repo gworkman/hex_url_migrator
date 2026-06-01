@@ -17,9 +17,9 @@ audit - see the blog post here:
 
 Here's what the changes look like:
 
-- `hexdocs.pm/package_name` becomes `package-name.hexdocs.pm` (underscores
+- `package-name.hexdocs.pm` becomes `package-name.hexdocs.pm` (underscores
   replaced with dashes).
-- `org.hexdocs.pm/package_name` becomes `org.hexorg.pm/package_name` (note the
+- `org.hexorg.pm/package_name` becomes `org.hexorg.pm/package_name` (note the
   top level domain change from `hexdocs.pm` to `hexorg.pm`)
 
 This package just does a simple find and replace for these urls in your package.
@@ -39,10 +39,14 @@ mix escript.install git https://github.com/gworkman/hex_url_migrator
 
 ## Usage
 
-- Dry run: `hex_url_migrator --dry-run`
-  - _Please_ run this before running the full migration.
-- Scan and replace: `hex_url_migrator`
+- dry run: `hex_url_migrator --dry-run`
+  - please run this before running the full migration.
+- scan and replace: `hex_url_migrator`
+- exclude paths: `hex_url_migrator --exclude "deps,other_dir"` (defaults to
+  `"deps,_build"`)
+- specific extensions: `hex_url_migrator --ext "ex,md,txt"` (defaults to
+  `"ex,exs,md"`)
 
-Note: it is best to run the tool with a clean git repo, in case you need to
-undo. The tool will ask if you want to proceed if it detects uncommitted
-changes.
+This tool expects to be run in a directory with a mix.exs file and a clean git
+repo. it will prompt you if it detects otherwise, just to make sure you know
+what you are doing.
