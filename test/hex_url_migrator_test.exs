@@ -114,11 +114,31 @@ defmodule HexUrlMigratorTest do
       assert {^expected, 1, ["https://nerves.hexdocs.pm/getting-started.html#nerves-livebook"]} =
                HexUrlMigrator.migrate_content(content)
     end
+
+    test "migrates typst markdown URL correctly" do
+      content = "Full documentation is available at [hexdocs.pm/typst](https://hexdocs.pm/typst)."
+      expected = "Full documentation is available at [typst.hexdocs.pm](https://typst.hexdocs.pm)."
+
+      assert {^expected, 2, ["typst.hexdocs.pm", "https://typst.hexdocs.pm"]} =
+               HexUrlMigrator.migrate_content(content)
+    end
   end
 
   describe "verify_migrated_urls/1" do
     test "successfully verifies a valid URL" do
       url = "https://nerves.hexdocs.pm/getting-started.html#nerves-livebook"
+
+      output =
+        capture_io(fn ->
+          HexUrlMigrator.verify_migrated_urls([url])
+        end)
+
+      assert output =~ "Verifying migrated URLs..."
+      assert output =~ "All 1 unique URLs verified successfully"
+    end
+
+    test "successfully verifies the typst URL" do
+      url = "https://typst.hexdocs.pm"
 
       output =
         capture_io(fn ->
