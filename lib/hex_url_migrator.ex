@@ -4,8 +4,8 @@ defmodule HexUrlMigrator do
   Ensures the directory is a clean Git repository before making changes.
   """
 
-  @public_regex ~r{(https?://)?\bhexdocs\.pm/([a-zA-Z0-9_]+)([^ \n\t"']*)?}
-  @org_regex ~r{(https?://)?\b([a-zA-Z0-9_-]+)\.hexdocs\.pm/([a-zA-Z0-9_]+)([^ \n\t"']*)?}
+  @public_regex ~r{(https?://)?\bhexdocs\.pm/([a-zA-Z0-9_]+)([^ \n\t"'\)]*)?}
+  @org_regex ~r{(https?://)?\b([a-zA-Z0-9_-]+)\.hexdocs\.pm/([a-zA-Z0-9_]+)([^ \n\t"'\)]*)?}
 
   def main(args) do
     # Parse CLI flags
@@ -133,7 +133,7 @@ defmodule HexUrlMigrator do
     end
   end
 
-  defp verify_migrated_urls(urls) do
+  def verify_migrated_urls(urls) do
     IO.puts("\nVerifying migrated URLs...")
 
     urls

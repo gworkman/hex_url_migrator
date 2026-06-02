@@ -1,5 +1,6 @@
 defmodule HexUrlMigratorTest do
   use ExUnit.Case
+  import ExUnit.CaptureIO
 
   describe "migrate_content/1" do
     test "migrates public hexdocs URLs" do
@@ -104,6 +105,39 @@ defmodule HexUrlMigratorTest do
       assert {^expected, 1,
               ["https://my_org.hexorg.pm/my_package/api-reference.html#summary?v=1"]} =
                HexUrlMigrator.migrate_content(content)
+    end
+
+    test "migrates URLs in markdown syntax without capturing the closing parenthesis" do
+      content = "[Nerves](https://hexdocs.pm/nerves/getting-started.html#nerves-livebook)"
+      expected = "[Nerves](https://nerves.hexdocs.pm/getting-started.html#nerves-livebook)"
+
+      assert {^expected, 1, ["https://nerves.hexdocs.pm/getting-started.html#nerves-livebook"]} =
+               HexUrlMigrator.migrate_content(content)
+    end
+  end
+
+  describe "verify_migrated_urls/1" do
+    test "successfully verifies a valid URL" do
+      url = "https://nerves.hexdocs.pm/getting-started.html#nerves-livebook"
+
+      output =
+        capture_io(fn ->
+          HexUrlMigrator.verify_migrated_urls([url])
+        end)
+
+      assert output =~ "Verifying migrated URLs..."
+      assert output =~ "All 1 unique URLs verified successfully"
+    end
+
+    test "reports failure for invalid URLs" do
+      url = "https://nerves.hexdocs.pm/non-existent-page-12345"
+
+      output =
+        capture_io(:stderr, fn ->
+          HexUrlMigrator.verify_migrated_urls([url])
+        end)
+
+      assert output =~ "Verification failed for"
     end
   end
 end
