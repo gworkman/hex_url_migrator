@@ -13,9 +13,9 @@ remains safe and protected from accidental overwrites.
 As of several days ago, HexDocs now hosts each package's docs in a separate
 subdomain. This change is related to security updates from the recent ecosystem
 audit - see the blog post here:
-[Hex.pm Security Audit](https://hex.pm/blog/security-audit).
+[HexDocs per-package subdomains](https://hex.pm/blog/hexdocs-per-package-subdomains).
 
-Here's what the changes look like:
+Here's what those changes look like:
 
 - `package-name.hexdocs.pm` becomes `package-name.hexdocs.pm` (underscores
   replaced with dashes).
