@@ -17,9 +17,9 @@ audit - see the blog post here:
 
 Here's what those changes look like:
 
-- `package-name.hexdocs.pm` becomes `package-name.hexdocs.pm` (underscores
+- `hexdocs.pm/package_name` becomes `package-name.hexdocs.pm` (underscores
   replaced with dashes).
-- `org.hexorg.pm/package_name` becomes `org.hexorg.pm/package_name` (note the
+- `org.hexdocs.pm/package_name` becomes `org.hexorg.pm/package_name` (note the
   top level domain change from `hexdocs.pm` to `hexorg.pm`)
 
 This package just does a simple find and replace for these urls in your package.
