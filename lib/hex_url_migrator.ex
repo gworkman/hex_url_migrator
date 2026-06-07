@@ -29,7 +29,7 @@ defmodule HexUrlMigrator do
     dry_run? = Keyword.get(parsed, :dry_run, false)
     verify? = Keyword.get(parsed, :verify, false)
     exclude_raw = Keyword.get(parsed, :exclude, "**/deps,**/_build")
-    ext_raw = Keyword.get(parsed, :ext, "ex,exs,md")
+    ext_raw = Keyword.get(parsed, :ext, "ex,exs,md,eex,livemd")
 
     exclude_patterns = String.split(exclude_raw, ",") |> Enum.map(&String.trim/1)
     extensions = String.split(ext_raw, ",") |> Enum.map(&String.trim/1)
